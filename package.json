@@ -1,0 +1,34 @@
+{
+  "name": "mithril-steps",
+  "version": "0.0.1",
+  "description": "Component lifecycle API via generator!",
+  "type": "module",
+  "main": "mithril-steps.js",
+  "scripts": {
+    "test": "http-server -o ./demo.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barneycarroll/mithril-steps.git"
+  },
+  "keywords": [
+    "view",
+    "lifecycle",
+    "generators",
+    "virtual",
+    "dom"
+  ],
+  "author": "Barney Carroll <barney.carroll@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/barneycarroll/mithril-steps/issues"
+  },
+  "homepage": "https://github.com/barneycarroll/mithril-steps#readme",
+  "peerDependencies": {
+    "mithril": ">=1 <3"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.3",
+    "mithril": ">=1 <3"
+  }
+}

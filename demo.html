@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang=en-GB>
+  <head>
+    <meta charset=utf-8>
+
+    <title>
+      Mithril Steps
+    </title>
+
+  </head>
+
+  <body>
+    <script src=./node_modules/mithril/mithril.js></script>
+    <script type=module>
+      import steps from './mithril-steps.js'
+
+      const Fade = steps(function * Flash({}, {create, remove}){
+        const options = {
+          duration : 2_000,
+          easing   : 'ease-in-out',
+        }
+
+        yield ({children}) => children
+
+        const {dom} = yield create
+
+        const {finished} = dom.animate({opacity: [0,1]}, options)
+
+        yield remove
+
+        yield finished
+        yield dom.animate({opacity: [1,0]}, options).finished
+      })
+
+      const Pulse = steps(function * Pulse(io, {update}){
+        yield ({children}) => children
+
+        let then = io.attrs.value
+
+        while(yield update){
+          const now  = io.attrs.value
+          const diff = now - then
+
+          then = now
+
+          if(diff === 0)
+            continue
+
+          const color = diff > 0 ? 'blue' : 'red'
+
+          io.dom.animate([{color}, {}], {
+            easing: 'ease-in',
+            duration: 2_000,
+          })
+        }
+      })
+
+      const box = `
+        display: inline-block;
+        text-align: center;
+        margin: 0 .5em .5em 0;
+        width: 1.5em;
+        height: 1.5em;
+        border: 1px solid;
+      `
+
+      const units = []
+
+      const unit = () => Math.round(Math.random() * 10)
+
+      m.mount(document.body, {
+        view: () => 
+          m('.App', {style: `
+            font: 1em/1.5 sans-serif;
+            margin: 5em auto;
+            max-width: 30em;
+          `},
+            m('h1', 'Mithril Steps!'),
+
+            m('p[font-style=italic]', 'Check out the tantalising source!'),
+
+            m('p', 
+              [
+                ['+', () => {
+                  units.push(unit())
+                }],
+
+                ['-', () => {
+                  units.splice(-1, 1)
+                }],
+
+                ['*', () => {
+                  units.forEach((_, index) => {
+                    units[index] = unit()
+                  })
+                }],
+              ]
+                .map(([textContent, onclick]) =>
+                  m('button', {
+                    style: box + 'font: inherit',
+                    textContent, 
+                    onclick,
+                  })
+                )
+            ),
+
+            units.map((value, init) => 
+              m(Fade,
+                m(Pulse, {value},
+                  m('div', {style: box},
+                    value,
+                  ),
+                ),
+              ),
+            )
+          ),
+      })
+    </script>
+  </body>
+</html>
