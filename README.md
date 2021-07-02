@@ -119,24 +119,23 @@ function * AsyncComponent({}, IO) {
   yield () =>
     m('h1', 'Loading...')
   
-    try {
-      const {data} = yield fetch(IO.attrs.url).then(x => x.json())
+  try {
+    const {data} = yield fetch(IO.attrs.url).then(x => x.json())
   
-      yield () => [
-        m('h1', 'Data:'),
+    yield () => [
+      m('h1', 'Data:'),
 
-        data.map(item => 
-          m('li', item)
-        ),
-      ]
-    }
-    catch(error) {
-      yield () => [
-        m('h1', 'Error!'),
+      data.map(item => 
+        m('li', item)
+      ),
+    ]
+  }
+  catch(error) {
+    yield () => [
+      m('h1', 'Error!'),
 	
-        m('p.error', error),
-      ]
-    }
+      m('p.error', error),
+    ]
+  }
 }
 ```
-
