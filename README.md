@@ -84,7 +84,7 @@ function * LinearSequence(FX) {
     
     yield FX.paint
     
-	  // 3.1... Persist DOM mutations to screen
+    // 3.1... Persist DOM mutations to screen
   }
   
   yield FX.teardown
