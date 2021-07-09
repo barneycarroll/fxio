@@ -1,6 +1,6 @@
 {
   "name": "fxio",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Callbacks are old hat, the lifecycle has run its course: Express effects via generator Sequences.",
   "type": "module",
   "main": "fxio.js",
