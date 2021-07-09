@@ -1,49 +1,74 @@
-# Mithril FX Sequencer
+# fxio
 
-*Alpha-level stuff: API in flux; partially documented; untested code.*
+Lifecycle methods? Hooks? Both are worse! The lifecycle as pertains to UI consumers is best expressed as a *sequence* of *effects* (`fx`), with a sharp distinction from input / output (`io`). 
 
-Lifecycle methods and Hooks? Both are worse! The lifecycle as pertains to UI consumers is best expressed as a *sequence* of *effects* (FX). The Sequencer API exposes a function enabling the expression of components as generators!! :0
+Currently available as a Mithril patch, the `fxio` API allows hyperscript to consume [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) as an alternative means of declaring components. All stateful and reactive component behaviour is still possible in Sequences, but they are especially suited for effects. By [yielding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield) to different *steps* of the components *sequence*, we reinstate the expressive power of imperative programming where it is best suited: in the description of single-scoped arbitrary commands to be executed sequentially.
+
+## So
+
+```sh
+npm i --save fxio
+```
+
+## Then
+
+```html
+<script src=./unpkg.com/mithril/mithril.js></script>
+<script>
+function * MySequence(){ /* 🪄 */ }
+</script>
+<!-- Either: -->
+<script type=module>
+  import {adapter} from './fxio.js'
+
+  const MyComponent = adapter(MySequence)
+
+  m.mount(document.body, MyComponent)
+</script>
+<!-- Or: -->
+<script type=module>
+  import {m} from './fxio.js'
+
+  m.mount(document.body, MySequence)
+</script>
+```
 
 ## What?
 
 ```js
-import {sequencer, extensions} from './index.js'
-
-// Mithril extensions enable optional performance & UX optimisations for the advanced feature set
-Object.assign(m, extensions)
-
-// Define components by transforming generators into Mithril components via the sequencer function
-const MySequence = sequencer(function * FadeInOut(FX, IO){
+function * FadeInOut(fx, io){
   // Define the view by yielding a function
   yield ({children}) => children
 
-  // Yield til DOM is available
-  yield FX.enter
+  // The fx object describes steps to yield until
+  yield fx.ready
 
   const {
     duration = 600,
     easing   = 'ease-in-out',
-  } = IO.attrs
+  } = io.attrs
 
-  const entry = IO.dom.animate({
+  const entry = io.dom.animate({
     opacity: [0, 1]
   }, {
     duration,
     easing, 
   })
 
-  // Yield til 'onbeforeremove'
-  yield FX.exit
+  // fx.exit yielding true means async teardown is possible!
+  if(yield fx.exit){
+    // Yielding a promise is the same as await
+    yield entry.finished
 
-  // Yielding a promise is the same as await
-  yield entry.finished
+    // Async teardown won't resolve until the sequence completes
+    yield io.dom.animate({
+      opacity: [1, 0]
+    }, {
+      duration,
+      easing,
+    })
+  }
 
-  yield IO.dom.animate({
-    opacity: [1, 0]
-  }, {
-    duration,
-    easing,
-  })
 })
 ```
 
@@ -68,38 +93,36 @@ Generators are Javascripts native mechanism for describing sequences. Rather tha
 ## How?
 
 ```js
-function * LinearSequence(FX) {
+function * LinearSequence(fx) {
   // 1. Initialisation…
   
-  yield FX.entry
+  yield fx.ready
   
   // 2. DOM is a available
   
-  yield FX.paint
+  yield fx.paint
   
   // 2.1. Persist DOM mutations to screen
   
-  while(yield FX.update) {
-    // 3... Input & Output persistence
+  while(yield fx.update) {
+    // 3... io updated
     
-    yield FX.paint
+    yield fx.paint
     
     // 3.1... Persist DOM mutations to screen
   }
-  
-  yield FX.teardown
-  
-  // 4. Teardown!
-  
-  yield FX.exit
-  
-  // 5? Async DOM removal conditions 
+
+  if(yield fx.exit){
+    // 4.1. Async teardown
+  }
+
+  // 4. Imperative teardown
 }
 ```
 
-This represents the full FX lifecycle of the component, which necesarilly runs in chronological sequence: Moving between desired steps in the lifecycle is achieved by yielding the relevant symbol. 
+This represents the full effects sequence of the component, which necesarilly runs in chronologically: Moving between desired steps in the lifecycle is achieved by yielding the relevant symbol. 
 
-But this won't address the primary concern of components, namely view definition or input access. `yield`ing to a function defines the view.
+This won't address the primary concern of components, namely view definition or input access. Yielding to a function defines the view:
 
 ```js
 function * ViewComponent() {
@@ -112,15 +135,15 @@ function * ViewComponent() {
 }
 ```
 
-Meanwhile, `yield`ing a value which is neither a function nor an `FX` step will cause the sequencer to `Promise.resolve` the received value, making the functionality identically to `await` (which assumes asynchronicity and necessarilly involves introducing an asynchronous gap).
+Meanwhile, yielding a value which is neither a function nor an `fx` step will cause the sequencer to `Promise.resolve` the received value, making the functionality identical to `await` (which assumes asynchronicity and necessarilly involves introducing an asynchronous gap).
 
 ```js
-function * AsyncComponent({}, IO) {
+function * AsyncComponent({}, io) { // <- no fx 😮
   yield () =>
     m('h1', 'Loading...')
   
   try {
-    const {data} = yield fetch(IO.attrs.url).then(x => x.json())
+    const {data} = yield fetch(io.attrs.url).then(x => x.json())
   
     yield () => [
       m('h1', 'Data:'),
@@ -137,5 +160,10 @@ function * AsyncComponent({}, IO) {
       m('p.error', error),
     ]
   }
+  finally {
+    m.redraw()
+  }
 }
 ```
+
+*To be continued…*

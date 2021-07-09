@@ -1,29 +1,32 @@
 {
-  "name": "mithril-steps",
+  "name": "fxio",
   "version": "0.0.1",
-  "description": "Component lifecycle API via generator!",
+  "description": "Callbacks are old hat, the lifecycle has run its course: Express effects via generator Sequences.",
   "type": "module",
-  "main": "mithril-steps.js",
+  "main": "fxio.js",
   "scripts": {
     "test": "http-server -o ./demo.html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/barneycarroll/mithril-steps.git"
+    "url": "git+https://github.com/barneycarroll/fxio.git"
   },
   "keywords": [
+    "ui",
     "view",
     "lifecycle",
+    "components",
     "generators",
+    "sequence",
     "virtual",
     "dom"
   ],
   "author": "Barney Carroll <barney.carroll@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/barneycarroll/mithril-steps/issues"
+    "url": "https://github.com/barneycarroll/fxio/issues"
   },
-  "homepage": "https://github.com/barneycarroll/mithril-steps#readme",
+  "homepage": "https://github.com/barneycarroll/fxio#readme",
   "peerDependencies": {
     "mithril": ">=1 <3"
   },
