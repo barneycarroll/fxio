@@ -38,11 +38,20 @@ export const adapter = generator => function Sequencer(vnode){
   void function iterate({value, done}){
     delete cmd.update
     
-    if(done)
+    if ( !done && value == null )
+      iterate(iterator.next(true))
+    
+    else if(done)
       cmd.resolve()
     
     else if(typeof value === 'function'){
       cmd.view = value
+
+      iterate(iterator.next(true))
+    }
+
+    else if('fxio' in value){
+      value.fxio()
 
       iterate(iterator.next(true))
     }
