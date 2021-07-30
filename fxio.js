@@ -38,7 +38,7 @@ export const adapter = generator => function Sequencer(vnode){
   void function iterate({value, done}){
     delete cmd.update
     
-    if ( value == null )
+    if ( !done && value == null )
       iterate(iterator.next(true))
     
     else if(done)
