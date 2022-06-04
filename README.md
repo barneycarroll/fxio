@@ -2,7 +2,7 @@
 
 Lifecycle methods? Hooks? Both are worse! The lifecycle as pertains to UI consumers is best expressed as a *sequence* of *effects* (`fx`), with a sharp distinction from input / output (`io`). 
 
-Currently available as a Mithril patch, the `fxio` API allows hyperscript to consume [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) as an alternative means of declaring components. All stateful and reactive component behaviour is still possible in Sequences, but they are especially suited for effects. By [yielding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield) to different *steps* of the components *sequence*, we reinstate the expressive power of imperative programming where it is best suited: in the description of single-scoped arbitrary commands to be executed sequentially.
+Currently available as a [Mithril](https://mithril.js.org/) patch, the `fxio` API allows hyperscript to consume [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator) as an alternative means of declaring components. All stateful and reactive component behaviour is still possible in Sequences, but they are especially suited for effects. By [yielding](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield) to different *steps* of the components *sequence*, we reinstate the expressive power of imperative programming where it is best suited: in the description of single-scoped arbitrary commands to be executed sequentially.
 
 ## So
 
